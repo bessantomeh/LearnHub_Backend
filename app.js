@@ -1,21 +1,23 @@
 import express from 'express';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import connectDB from './db/connection.js'; 
+import * as indexRouter from './routes/indexRouter.js'; 
 
-dotenv.config({ path: './.env' });
-
+dotenv.config();
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-const uri = process.env.DBURL;
+app.use(express.json());
+connectDB();
 
-mongoose.connect(uri)
-  .then(() => {
-    console.log('MongoDB connected successfully');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error);
-  });
+const baseurl = process.env.BASEURL || '/api/v1/';
+
+app.use(`${baseurl}auth`, indexRouter.authRouter);
+
+app.use('*', (req, res) => {
+  res.status(404).json({ message: "page not found" });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
