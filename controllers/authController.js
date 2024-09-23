@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import SendEmail from '../services/email.js';
 import { URL } from 'url';
+import { v4 as uuidv4 } from 'uuid';
+
 
 export const signUp = async (req, res, next) => {
     try {
@@ -84,3 +86,67 @@ export const confirmEmail = async (req, res, next) => {
       next(serverError);
     }
   };
+
+  export const signIn = async (req, res, next) => {
+    try {
+      if (!process.env.AUTHTOKEN) {
+        throw new Error('AUTHTOKEN environment variable is not defined.');
+      }
+      const { email, password } = req.body;
+      const user = await userModel.findOne({ email });
+      if (!user) {
+        next(Object.assign(new Error("Not registered user"), { cause: 404 }));
+      } else {
+        if (!user.confirmEmail) {
+          next(Object.assign(new Error("Email not confirmed"), { cause: 403 }));
+        } else {
+          const compare = await bcrypt.compare(password, user.password);
+          if (!compare) {
+            next(Object.assign(new Error("Invalid password"), { cause: 401 }));
+          } else {
+            const token = jwt.sign({ id: user._id }, process.env.AUTHTOKEN, { expiresIn: "1d" });
+            res.status(200).json({ message: "Success", token });
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      next(Object.assign(new Error("Server error"), { cause: 500 }));
+    }
+  };
+  
+  export const sendCode = async (req, res, next) => {
+    const { email } = req.body;
+    const user = await userModel.findOne({ email }).select('email');
+    if (!user) {
+      res.json({ message: "invalid account" });
+    } else {
+      const code = uuidv4();
+      SendEmail(email, 'Forget password', `verify code :${code}`);
+      const updateUser = await userModel.updateOne({ _id: user._id }, { sendCode: code });
+      if (!updateUser) {
+        res.json({ message: "invalid" });
+      } else {
+        res.json({ message: "success" });
+      }
+    }
+  };
+  
+  export const forgetPassword = async (req, res, next) => {
+    const { code, email, newPassword } = req.body;
+    if (!process.env.SALTROUNT) {
+      throw new Error('SALTROUNT | EMAILTOKEN environment variable is not defined.');
+    }
+    if (code == null) {
+      res.json({ message: "fail" });
+    } else {
+      const hash = await bcrypt.hash(newPassword, parseInt(process.env.SALTROUNT));
+      const user = await userModel.findOneAndUpdate({ email, sendCode: code }, { password: hash, sendCode: null });
+      if (!user) {
+        res.json({ message: "fail" });
+      } else {
+        res.json({ message: "success" });
+      }
+    }
+  };
+  

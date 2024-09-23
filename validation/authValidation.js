@@ -20,3 +20,28 @@ export const signup = {
       })
   }),
 };
+
+export const signin = {
+  body: Joi.object().required().keys({
+    email: Joi.string().email().required().messages({
+      'any.required': 'please send your email',
+    }),
+    password: Joi.string().required(),
+  }),
+};
+
+export const sendCode = {
+  body: Joi.object().required().keys({
+    email: Joi.string().email().required().messages({
+      'any.required': 'please send your email',
+    }),
+  }),
+};
+
+export const forgetpassword = {
+  body: Joi.object().required().keys({
+    code: Joi.string().required(),
+    email: Joi.string().email().required(),
+    newPassword: Joi.string().min(5).max(20).required(),
+  }),
+};
