@@ -92,28 +92,32 @@ export const confirmEmail = async (req, res, next) => {
       if (!process.env.AUTHTOKEN) {
         throw new Error('AUTHTOKEN environment variable is not defined.');
       }
+  
       const { email, password } = req.body;
       const user = await userModel.findOne({ email });
+  
       if (!user) {
-        next(Object.assign(new Error("Not registered user"), { cause: 404 }));
-      } else {
-        if (!user.confirmEmail) {
-          next(Object.assign(new Error("Email not confirmed"), { cause: 403 }));
-        } else {
-          const compare = await bcrypt.compare(password, user.password);
-          if (!compare) {
-            next(Object.assign(new Error("Invalid password"), { cause: 401 }));
-          } else {
-            const token = jwt.sign({ id: user._id }, process.env.AUTHTOKEN, { expiresIn: "1d" });
-            res.status(200).json({ message: "Success", token });
-          }
-        }
+        return res.status(404).json({ message: "User is not registered." });
+      } 
+      
+      if (!user.confirmEmail) {
+        return res.status(403).json({ message: "Email is not confirmed." });
       }
+  
+      const compare = await bcrypt.compare(password, user.password);
+      if (!compare) {
+        return res.status(401).json({ message: "Invalid password." });
+      }
+  
+      const token = jwt.sign({ id: user._id }, process.env.AUTHTOKEN, { expiresIn: "1d" });
+      res.status(200).json({ message: "Success", token });
+  
     } catch (error) {
       console.log(error);
-      next(Object.assign(new Error("Server error"), { cause: 500 }));
+      res.status(500).json({ message: "Server error." });
     }
   };
+  
   
   export const sendCode = async (req, res, next) => {
     const { email } = req.body;
