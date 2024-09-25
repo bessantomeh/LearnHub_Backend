@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const userModel = require('../db/schemas/userSchema');
+import jwt from 'jsonwebtoken';
+import userModel from '../db/schemas/userSchema.js';
 
 const validateToken = (token, authbearertoken) => {
   if (!token.startsWith(authbearertoken)) {
@@ -13,13 +13,14 @@ const getUserFromToken = async (token, AUTHTOKEN, authbearertoken) => {
   return decoded.id;
 };
 
+
 const checkUserRole = (user, accessRole) => {
   if (!accessRole.includes(user.role)) {
     throw new Error("Not authorized");
   }
 };
 
-const authorizeUser = (accessRole = []) => {
+export const authorizeUser = (accessRole = []) => {
   return async (req, res, next) => {
     try {
       const { authbearertoken, AUTHTOKEN } = process.env;
@@ -48,5 +49,3 @@ const authorizeUser = (accessRole = []) => {
     }
   };
 };
-
-module.exports = { authorizeUser };
