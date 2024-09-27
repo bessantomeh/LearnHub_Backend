@@ -1,89 +1,138 @@
 import Course from '../db/schemas/courseSchema.js';
-import Enrollment from '../db/schemas/EnrollmentSchema.js';
-import userModel from '../db/schemas/userSchema.js';
 
-export const enrollInCourse = async (req, res) => {
-    const { userId, courseId } = req.body; 
+export const createCourse = async (req, res) => {
+  try {
+    const { title, description, instructors, startDate, endDate, capacity, subject } = req.body;
+    
+    if (!title || !description || !instructors || !startDate || !endDate || !capacity || !subject) {
+      return res.status(400).json({ error: 'Please provide all required fields' });
+    }
+
+    if (new Date(startDate) >= new Date(endDate)) {
+      return res.status(400).json({ error: 'Start date must be before end date' });
+    }
+
+    if (capacity <= 0) {
+      return res.status(400).json({ error: 'Capacity must be a positive number' });
+    }
+
+    const existingCourse = await Course.findOne({ title });
+    if (existingCourse) {
+      return res.status(400).json({ error: 'Course with this title already exists' });
+    }
+
+    const newCourse = new Course({
+      title,
+      description,
+      instructors, 
+      startDate,
+      endDate,
+      capacity,
+      subject,
+    });
+
+    const savedCourse = await newCourse.save();
+    res.status(201).json({ message: 'Course created successfully', course: savedCourse });
+  } catch (error) {
+    console.error('Error creating course:', error);
+    res.status(500).json({ error: 'Failed to create the course' });
+  }
+};
+
+export const updateCourse = async (req, res) => {
+    try {
+      const courseId = req.params.courseId; 
+      const { title, description, instructors, startDate, endDate, capacity, subject } = req.body;
+  
+      const course = await Course.findById(courseId);
+      if (!course) {
+        return res.status(404).json({ error: 'Course not found' });
+      }
+  
+      const updatedCourse = await Course.findByIdAndUpdate(
+        courseId,
+        {
+          title,
+          description,
+          instructors,  
+          startDate,
+          endDate,
+          capacity,
+          subject,
+        },
+        { new: true, runValidators: true } 
+      );
+  
+      res.status(200).json({ message: 'Course updated successfully', course: updatedCourse });
+    } catch (error) {
+      console.error('Update course error:', error);
+      res.status(500).json({ error: 'Failed to update the course' });
+    }
+  };
+
+export const deleteCourse = async (req, res) => {
+    try {
+      const { courseId } = req.params;
+  
+      const course = await Course.findById(courseId);
+      if (!course) {
+        return res.status(404).json({ message: 'Course not found' });
+      }
+  
+      await Course.findByIdAndDelete(courseId);
+      res.status(200).json({ message: 'Course deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to delete the course' });
+    }
+  };
+
+export const getCourseDetails = async (req, res) => {
+    try {
+      const { courseId } = req.params;
+  
+      const course = await Course.findById(courseId);
+      if (!course) {
+        return res.status(404).json({ message: 'Course not found' });
+      }
+  
+      res.status(200).json(course);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve the course details' });
+    }
+  };
+
+
+export const getAllCourses = async (req, res) => {
+    try {
+      const courses = await Course.find();
+      if (courses.length === 0) {
+        return res.status(404).json({ message: 'No courses found' });
+      }
+  
+      res.status(200).json(courses);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve courses' });
+    }
+  };
+
+export const searchCourseByTitle = async (req, res) => {
+    const { title } = req.query; 
   
     try {
-      if (!userId || !courseId) {
-        return res.status(400).json({ message: 'User ID and Course ID are required.' });
-      }
-  
-      const user = await userModel.findById(userId);
-      const course = await Course.findById(courseId);
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found.' });
-      }
-  
-      if (!course) {
-        return res.status(404).json({ message: 'Course not found.' });
-      }
-  
-      const existingEnrollment = await Enrollment.findOne({ userId, courseId });
-  
-      if (existingEnrollment) {
-        return res.status(400).json({ message: 'User is already enrolled in this course.' });
-      }
-  
-      const enrolledCount = await Enrollment.countDocuments({ courseId });
-      if (enrolledCount >= course.capacity) {
-        return res.status(400).json({ message: 'Course capacity has been reached.' });
-      }
-  
-      const newEnrollment = new Enrollment({
-        userId,
-        courseId,
-      });
-  
-      const savedEnrollment = await newEnrollment.save();
-  
-      course.capacity -= 1; 
-      await course.save(); 
-  
-      res.status(201).json(savedEnrollment);
+      const courses = await Course.find({ title: new RegExp(title, 'i') }); 
+      res.status(200).json(courses);
     } catch (error) {
-      res.status(500).json({ message: 'Error enrolling in the course.', error });
+      res.status(500).json({ message: 'Error searching courses by title.', error });
     }
   };
   
-
-export const searchCourseByTitle = async (req, res) => {
-  const { title } = req.query; 
-
-  try {
-    const courses = await Course.find({ title: new RegExp(title, 'i') }); 
-    res.status(200).json(courses);
-  } catch (error) {
-    res.status(500).json({ message: 'Error searching courses by title.', error });
-  }
-};
-
 export const searchCourseBySubject = async (req, res) => {
-  const { subject } = req.query; 
-
-  try {
-    const courses = await Course.find({ subject: new RegExp(subject, 'i') }); 
-    res.status(200).json(courses);
-  } catch (error) {
-    res.status(500).json({ message: 'Error searching courses by subject.', error });
-  }
-};
-
-export const listUserCourses = async (req, res) => {
-  const { userId } = req.params; 
-
-  try {
-    const enrollments = await Enrollment.find({ userId }).populate('courseId');
-    if (enrollments.length === 0) {
-      return res.status(404).json({ message: 'No courses found for this user.' });
+    const { subject } = req.query; 
+  
+    try {
+      const courses = await Course.find({ subject: new RegExp(subject, 'i') }); 
+      res.status(200).json(courses);
+    } catch (error) {
+      res.status(500).json({ message: 'Error searching courses by subject.', error });
     }
-
-    const courses = enrollments.map(enrollment => enrollment.courseId);
-    res.status(200).json(courses);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching user courses.', error });
-  }
-};
-
+  };

@@ -14,6 +14,8 @@ const baseurl = process.env.BASEURL || '/api/v1/';
 
 app.use(`${baseurl}auth`, indexRouter.authRouter);
 app.use(`${baseurl}course`,indexRouter.courseRouter)
+app.use(`${baseurl}enrollCourse`,indexRouter.enrollRouter)
+
 
 app.use('*', (req, res) => {
   res.status(404).json({ message: "page not found" });
