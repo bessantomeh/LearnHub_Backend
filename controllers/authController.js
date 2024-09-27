@@ -87,7 +87,7 @@ export const confirmEmail = async (req, res, next) => {
     }
   };
 
-  export const signIn = async (req, res, next) => {
+export const signIn = async (req, res, next) => {
     try {
       if (!process.env.AUTHTOKEN) {
         throw new Error('AUTHTOKEN environment variable is not defined.');
@@ -119,7 +119,7 @@ export const confirmEmail = async (req, res, next) => {
   };
   
   
-  export const sendCode = async (req, res, next) => {
+export const sendCode = async (req, res, next) => {
     const { email } = req.body;
     const user = await userModel.findOne({ email }).select('email');
     if (!user) {
@@ -136,7 +136,7 @@ export const confirmEmail = async (req, res, next) => {
     }
   };
   
-  export const forgetPassword = async (req, res, next) => {
+export const forgetPassword = async (req, res, next) => {
     const { code, email, newPassword } = req.body;
     if (!process.env.SALTROUNT) {
       throw new Error('SALTROUNT | EMAILTOKEN environment variable is not defined.');
