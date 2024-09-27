@@ -86,7 +86,7 @@ export const deleteCourse = async (req, res) => {
     }
   };
 
-  export const getCourseDetails = async (req, res) => {
+export const getCourseDetails = async (req, res) => {
     try {
       const { courseId } = req.params;
   
@@ -102,7 +102,7 @@ export const deleteCourse = async (req, res) => {
   };
 
 
-  export const getAllCourses = async (req, res) => {
+export const getAllCourses = async (req, res) => {
     try {
       const courses = await Course.find();
       if (courses.length === 0) {
@@ -112,5 +112,27 @@ export const deleteCourse = async (req, res) => {
       res.status(200).json(courses);
     } catch (error) {
       res.status(500).json({ error: 'Failed to retrieve courses' });
+    }
+  };
+
+export const searchCourseByTitle = async (req, res) => {
+    const { title } = req.query; 
+  
+    try {
+      const courses = await Course.find({ title: new RegExp(title, 'i') }); 
+      res.status(200).json(courses);
+    } catch (error) {
+      res.status(500).json({ message: 'Error searching courses by title.', error });
+    }
+  };
+  
+export const searchCourseBySubject = async (req, res) => {
+    const { subject } = req.query; 
+  
+    try {
+      const courses = await Course.find({ subject: new RegExp(subject, 'i') }); 
+      res.status(200).json(courses);
+    } catch (error) {
+      res.status(500).json({ message: 'Error searching courses by subject.', error });
     }
   };
