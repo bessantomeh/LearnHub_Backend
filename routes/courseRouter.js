@@ -12,4 +12,6 @@ courseRouter.get('/coursesDetails/:courseId', authorizeUser([roles.user, roles.a
 courseRouter.get('/Courses', CourseController.getAllCourses);
 courseRouter.get('/search/subject/:subject',authorizeUser([roles.user, roles.admin]), CourseController.searchCourseBySubject)
 courseRouter.get('/search/title/:title',authorizeUser([roles.user, roles.admin]), CourseController.searchCourseByTitle)
+courseRouter.get('/NewCourses', CourseController.getNewCourses);
+
 export default courseRouter; 
