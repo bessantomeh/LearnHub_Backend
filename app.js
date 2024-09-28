@@ -6,12 +6,17 @@ import cors from 'cors';
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
-app.use(cors({ origin: '*' }));
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
+  allowedHeaders: ['Authorization', 'Content-Type'],
+}));
+
 app.use(express.json());
 connectDB();
 
 const baseurl = process.env.BASEURL || '/api/v1/';
-
+app.use(`${baseurl}user`,indexRouter.userRouter)
 app.use(`${baseurl}auth`, indexRouter.authRouter);
 app.use(`${baseurl}course`,indexRouter.courseRouter)
 app.use(`${baseurl}enrollCourse`,indexRouter.enrollRouter)
