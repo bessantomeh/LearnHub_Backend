@@ -8,11 +8,10 @@ const validateToken = (token, authbearertoken) => {
 };
 
 const getUserFromToken = async (token, AUTHTOKEN, authbearertoken) => {
-  const extractedToken = token.split(authbearertoken)[1];
-  const decoded = jwt.verify(extractedToken, AUTHTOKEN);
-  return decoded.id;
+  const extractedToken = token.split(authbearertoken)[1]; 
+  const decoded = jwt.verify(extractedToken, AUTHTOKEN); 
+  return decoded.id; 
 };
-
 
 const checkUserRole = (user, accessRole) => {
   if (!accessRole.includes(user.role)) {
@@ -29,23 +28,22 @@ export const authorizeUser = (accessRole = []) => {
         throw new Error('Required environment variables are not defined.');
       }
 
-      const token = req.headers.token;
-
-      validateToken(token, authbearertoken);
-      const userId = await getUserFromToken(token, AUTHTOKEN, authbearertoken);
-      const user = await userModel.findById(userId).select('role');
+      const token = req.headers.token; 
+      validateToken(token, authbearertoken); 
+      const userId = await getUserFromToken(token, AUTHTOKEN, authbearertoken); 
+      const user = await userModel.findById(userId).select('role'); 
 
       if (!user) {
         throw new Error("Not a registered user");
       }
 
-      checkUserRole(user, accessRole);
+      checkUserRole(user, accessRole); 
 
-      req.user = user;
-      next();
+      req.user = user; 
+      next(); 
     } catch (error) {
-      console.error('JWT Verification Error:', error);
-      res.status(500).json({ message: "catch error" });
+      console.error('JWT Verification Error:', error); 
+      res.status(401).json({ message: "Unauthorized" }); 
     }
   };
 };
