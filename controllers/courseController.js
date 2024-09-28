@@ -122,7 +122,7 @@ export const getAllCourses = async (req, res) => {
     const { title } = req.params; 
     
     try {
-      const courses = await Course.find({ title: new RegExp(title, 'i') }); 
+      const courses = await Course.find({ title: { $regex: new RegExp(querysearch, 'i') } });
       
       if (courses.length === 0) {
         return res.status(404).json({ message: 'No courses found with the given title.' });
@@ -137,7 +137,7 @@ export const getAllCourses = async (req, res) => {
   export const searchCourseBySubject = async (req, res) => {
     const { subject } = req.params;    
     try {
-      const courses = await Course.find({ subject: new RegExp(subject, 'i') });
+      const courses = await Course.find({ subject: { $regex: new RegExp(querysearch, 'i') } });
   
       if (courses.length === 0) {
         return res.status(404).json({ message: 'No courses found with the given subject.' });
