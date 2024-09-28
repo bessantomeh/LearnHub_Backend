@@ -5,8 +5,8 @@ import userModel from '../db/schemas/userSchema.js';
 
 
 export const enrollInCourse = async (req, res) => {
-    const { userId, courseId } = req.body; 
-  
+    const { courseId } = req.body; 
+    const userId = req.user?._id;
     try {
       if (!userId || !courseId) {
         return res.status(400).json({ message: 'User ID and Course ID are required.' });

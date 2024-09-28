@@ -16,7 +16,7 @@ app.use(express.json());
 connectDB();
 
 const baseurl = process.env.BASEURL || '/api/v1/';
-
+app.use(`${baseurl}user`,indexRouter.userRouter)
 app.use(`${baseurl}auth`, indexRouter.authRouter);
 app.use(`${baseurl}course`,indexRouter.courseRouter)
 app.use(`${baseurl}enrollCourse`,indexRouter.enrollRouter)
