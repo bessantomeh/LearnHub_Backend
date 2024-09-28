@@ -75,7 +75,7 @@ export const confirmEmail = async (req, res, next) => {
           return next(error);
         } else {
             const FEURL = process.env.FEURL;
-            const redirectURL = new URL('profile', FEURL).href; 
+            const redirectURL = new URL('HomePage', FEURL).href; 
             res.status(200).redirect(redirectURL);
         }
       }
@@ -118,7 +118,6 @@ export const signIn = async (req, res, next) => {
     }
   };
   
-  
 export const sendCode = async (req, res, next) => {
     const { email } = req.body;
     const user = await userModel.findOne({ email }).select('email');
@@ -154,7 +153,7 @@ export const forgetPassword = async (req, res, next) => {
     }
   };
 
-  export const verifyCode = async (req, res, next) => {
+export const verifyCode = async (req, res, next) => {
     try {
         const { email, code } = req.body;
 
