@@ -153,4 +153,30 @@ export const forgetPassword = async (req, res, next) => {
       }
     }
   };
+
+  export const verifyCode = async (req, res, next) => {
+    try {
+        const { email, code } = req.body;
+
+
+        const user = await userModel.findOne({ email }).select('sendCode');
+
+
+        if (!user || !user.sendCode) {
+            return res.status(404).json({ message: "Invalid email or no code sent" });
+        }
+
+
+        if (user.sendCode !== code) {
+            return res.status(401).json({ message: "Invalid code" });
+        }
+
+
+        return res.status(200).json({ message: "Code verified successfully" });
+
+    } catch (error) {
+        console.error("Error verifying code:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
   

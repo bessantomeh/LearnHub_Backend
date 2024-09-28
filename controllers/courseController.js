@@ -127,7 +127,7 @@ export const searchCourseByTitle = async (req, res) => {
   };
   
 export const searchCourseBySubject = async (req, res) => {
-    const { subject } = req.query; 
+    const { subject } = req.params; 
   
     try {
       const courses = await Course.find({ subject: new RegExp(subject, 'i') }); 

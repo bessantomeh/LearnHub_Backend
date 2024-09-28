@@ -9,4 +9,5 @@ router.get('/confirmEmail/:token', AuthController.confirmEmail);
 router.post('/signIn',validation(validators.signin),AuthController.signIn)
 router.patch('/sendCode',validation(validators.sendCode),AuthController.sendCode)
 router.patch('/forgetPassword',validation(validators.forgetpassword),AuthController.forgetPassword)
+router.post('/verifyCode', validation(validators.verifyCode), AuthController.verifyCode);
 export default router; 

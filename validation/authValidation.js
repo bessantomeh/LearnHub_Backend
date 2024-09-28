@@ -45,3 +45,17 @@ export const forgetpassword = {
     newPassword: Joi.string().min(5).max(20).required(),
   }),
 };
+
+export const verifyCode = {
+  body: Joi.object().required().keys({
+      email: Joi.string().email().required().messages({
+          'any.required': 'Email is required',
+          'string.empty': 'Email cannot be empty',
+          'string.email': 'Invalid email format',
+      }),
+      code: Joi.string().required().messages({
+          'any.required': 'Verification code is required',
+          'string.empty': 'Verification code cannot be empty',
+      }),
+  }),
+};
