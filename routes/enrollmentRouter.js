@@ -7,7 +7,7 @@ import { Router } from "express";
 const enrollRouter = Router()
 
 enrollRouter.post('/enroll',authorizeUser([roles.user]), EnrollmentController.enrollInCourse)
-enrollRouter.get('/courses/user/:userId',authorizeUser([roles.user]), EnrollmentController.listUserCourses)
+enrollRouter.get('/courses/user',authorizeUser([roles.user]), EnrollmentController.listUserCourses)
 
 
 export default enrollRouter;
