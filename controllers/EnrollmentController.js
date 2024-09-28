@@ -5,7 +5,7 @@ import userModel from '../db/schemas/userSchema.js';
 
 
 export const enrollInCourse = async (req, res) => {
-    const { courseId } = req.body; 
+    const {courseId} = req.body; 
     const userId = req.user?._id;
     try {
       if (!userId || !courseId) {
@@ -51,8 +51,7 @@ export const enrollInCourse = async (req, res) => {
   };
 
 export const listUserCourses = async (req, res) => {
-    const { userId } = req.params; 
-  
+  const userId = req.user?._id;  
     try {
       const enrollments = await Enrollment.find({ userId }).populate('courseId');
       if (enrollments.length === 0) {
