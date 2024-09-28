@@ -1,5 +1,8 @@
 import Course from '../db/schemas/courseSchema.js';
 import Enrollment from '../db/schemas/EnrollmentSchema.js';
+
+
+
 export const createCourse = async (req, res) => {
   try {
     const { title, description, instructors, startDate, endDate, capacity, subject } = req.body;
@@ -80,6 +83,7 @@ export const deleteCourse = async (req, res) => {
       }
       await Enrollment.deleteMany({ courseId });
       await Course.findByIdAndDelete(courseId);
+      await Enrollment.deleteMany({ courseId });
       res.status(200).json({ message: 'Course deleted successfully' });
     } catch (error) {
       res.status(500).json({ error: 'Failed to delete the course' });
@@ -114,34 +118,37 @@ export const getAllCourses = async (req, res) => {
     }
   };
 
-export const searchCourseByTitle = async (req, res) => {
-  const { title } = req.params;  
-    
-  try {
-    const courses = await Course.find({ title: { $regex: new RegExp(title, 'i') } });
-    
-    if (courses.length === 0) {
-      return res.status(404).json({ message: 'No courses found with the given title.' });
-    }
 
-    res.status(200).json(courses);
-  } catch (error) {
-    res.status(500).json({ message: 'Error searching courses by title.', error });
-  }
+  export const searchCourseByTitle = async (req, res) => {
+    const { title } = req.params;  
+    
+    try {
+      const courses = await Course.find({ title: { $regex: new RegExp(title, 'i') } });
+      
+      if (courses.length === 0) {
+        return res.status(404).json({ message: 'No courses found with the given title.' });
+      }
+  
+      res.status(200).json(courses);
+    } catch (error) {
+      res.status(500).json({ message: 'Error searching courses by title.', error });
+    }
+  };
+
+
+  export const searchCourseBySubject = async (req, res) => {
+    const { subject } = req.params;
+  
+    try {
+      const courses = await Course.find({ subject: { $regex: new RegExp(subject, 'i') } });
+  
+      if (courses.length === 0) {
+        return res.status(404).json({ message: 'No courses found with the given subject.' });
+      }
+  
+      res.status(200).json(courses);
+    } catch (error) {
+      res.status(500).json({ message: 'Error searching courses by subject.', error });
+    }
   };
   
-export const searchCourseBySubject = async (req, res) => {
-  const { subject } = req.params;
-  
-  try {
-    const courses = await Course.find({ subject: { $regex: new RegExp(subject, 'i') } });
-
-    if (courses.length === 0) {
-      return res.status(404).json({ message: 'No courses found with the given subject.' });
-    }
-
-    res.status(200).json(courses);
-  } catch (error) {
-    res.status(500).json({ message: 'Error searching courses by subject.', error });
-  }
-  };
