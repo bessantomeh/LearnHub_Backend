@@ -110,7 +110,7 @@ export const signIn = async (req, res, next) => {
       }
   
       const token = jwt.sign({ id: user._id }, process.env.AUTHTOKEN, { expiresIn: "1d" });
-      res.status(200).json({ message: "Success", token });
+      res.status(200).json({ message: "Success", token, role: user.role });
   
     } catch (error) {
       console.log(error);
