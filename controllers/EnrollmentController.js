@@ -2,11 +2,8 @@ import Course from '../db/schemas/courseSchema.js';
 import Enrollment from '../db/schemas/EnrollmentSchema.js';
 import userModel from '../db/schemas/userSchema.js';
 
-
-
 export const enrollInCourse = async (req, res) => {
-
-    const { courseId } = req.body; 
+    const {courseId} = req.body; 
     const userId = req.user?._id;
     try {
       if (!userId || !courseId) {

@@ -152,3 +152,23 @@ export const getAllCourses = async (req, res) => {
     }
   };
   
+  export const getNewCourses = async (req,res) => {
+
+    try {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  
+      const newCourses = await Course.find({
+        startDate: { $gte: thirtyDaysAgo }
+      }).sort({ startDate: -1 }); 
+  
+      if (!newCourses.length) {
+        return res.status(404).json({ message: 'No new courses available.' });
+      }
+  
+      res.status(200).json(newCourses);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching new courses.', error });
+    }
+  
+  };
