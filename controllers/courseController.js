@@ -169,6 +169,6 @@ export const getAllCourses = async (req, res) => {
       res.status(200).json(newCourses);
     } catch (error) {
       res.status(500).json({ message: 'Error fetching new courses.', error });
-    }
+    }};
   
 
