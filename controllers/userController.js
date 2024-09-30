@@ -1,5 +1,7 @@
 import userModel from '../db/schemas/userSchema.js'; 
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import SendEmail from '../services/email.js';
 
 export const getProfile = async (req, res) => {
     try {
