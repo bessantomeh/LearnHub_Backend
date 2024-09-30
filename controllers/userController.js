@@ -98,6 +98,55 @@ export const deleteUser = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
+
+
+  export const getUserById = async (req, res) => {
+    try {
+      const { userId } = req.params;
+  
+      const user = await userModel.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve the user details' });
+    }
+  };
+
+  export const searchUserByName = async (req, res) => {
+    const { username } = req.params;  
+    
+    try {
+      const users = await userModel.find({ username: { $regex: new RegExp(username, 'i') } });
+      
+      if (users.length === 0) {
+        return res.status(404).json({ message: 'No Users found with the given namw.' });
+      }
+  
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json({ message: 'Error searching users by name.', error });
+    }
+  };
+
+
+  export const searchUserByEmail = async (req, res) => {
+    const { email } = req.params;
+  
+    try {
+      const users = await userModel.find({ email: { $regex: new RegExp(email, 'i') } });
+  
+      if (users.length === 0) {
+        return res.status(404).json({ message: 'No users found with the given email.' });
+      }
+  
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json({ message: 'Error searching users by email.', error });
+    }
+  };
   
   
   
