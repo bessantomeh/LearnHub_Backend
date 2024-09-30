@@ -221,23 +221,40 @@ export const signOut = async (req, res) => {
     try {
       const { username, email, password } = req.body;
       
+      const user = await userModel.findOne({ email }).select("email");
+      if (user) {
+        return res.status(409).json({ message: 'Email already exists' });
+      }
+  
       if (!process.env.SALTROUNT || !process.env.EMAILTOKEN) {
-        throw new Error('SALTROUNDS or EMAILTOKEN environment variable is not defined.');
+        throw new Error('SALTROUNT | EMAILTOKEN environment variable is not defined.');
       }
+      if (!process.env.AUTHTOKEN) {
+        throw new Error('AUTHTOKEN environment variable is not defined.');
+      }
+  
+      const SALTROUNT = parseInt(process.env.SALTROUNT);
       
-      const existingUser = await userModel.findOne({ email });
-      if (existingUser) {
-        return next(Object.assign(new Error('Email already exists'), { cause: 409 }));
+      const hash = bcrypt.hashSync(password, SALTROUNT);
+      
+      const newUser = new userModel({ username, email, password: hash });
+      
+      const token = jwt.sign({ id: newUser._id }, process.env.AUTHTOKEN, { expiresIn: "1d" });
+      
+      const link = `${req.protocol}://${req.headers.host}${process.env.BASEURL}auth/confirmEmail/${token}`;
+      const message = `<a href="${link}">Confirm Email</a>`;
+      
+      const info = await SendEmail(email, 'Verify email', message);
+      if (info.accepted.length) {
+        const savedUser = await newUser.save();
+        console.log("User saved successfully:", savedUser);
+        return res.status(201).json({ message: 'Success', token });
       } else {
-        const saltRounds = parseInt(process.env.SALTROUNT);
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const newUser = new userModel({ username, email, password: hashedPassword, confirmEmail: true });
-        const token = jwt.sign({ id: newUser._id }, process.env.EMAILTOKEN, { expiresIn: '1h' });
-        await newUser.save();
-        return res.status(201).json({ message: 'User created successfully', user: token });
+        return next(Object.assign(new Error("Email rejected"), { cause: 404 }));
       }
-    } catch (error) {
-      return next(Object.assign(new Error('Server error'), { cause: 500 }));
+    } catch (err) {
+        console.error("Error saving user:", err); 
+      return res.status(500).json({ message: 'Server error' });
     }
   };
   
