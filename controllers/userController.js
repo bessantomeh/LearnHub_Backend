@@ -148,7 +148,15 @@ export const deleteUser = async (req, res) => {
     }
   };
   
-  
+export const signOut = async (req, res) => {
+    try {
+
+      res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+      console.error("Error during sign out:", error);
+      res.status(500).json({ message: "Server error during sign out" });
+    }
+  };
   
   
   

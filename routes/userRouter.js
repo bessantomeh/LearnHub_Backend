@@ -17,6 +17,7 @@ userRouter.get('/admin/user/:userId',authorizeUser([roles.admin]),userController
 //userRouter.put('admin/updateUser/:userId',authorizeUser([roles.admin]),userController.adminUpdateUser)
 userRouter.get('/admin/users/search/name/:username',authorizeUser([roles.admin]),userController.searchUserByName)
 userRouter.get('/admin/users/search/email/:email',authorizeUser([roles.admin]),userController.searchUserByEmail)
+userRouter.post('/signOut',authorizeUser([roles.admin,roles.user]),userController.signOut)
 
 
 
