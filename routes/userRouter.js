@@ -10,6 +10,14 @@ userRouter.patch('/updatePassword',authorizeUser([roles.user,roles.admin]),userC
 userRouter.put("/updateUser",authorizeUser([roles.user,roles.admin]), userController.updateUser);
 userRouter.get('/allUsers',authorizeUser([roles.admin]),userController.getAllUsers)
 userRouter.delete('/delete',authorizeUser([roles.admin,roles.user]),userController.deleteUser)
+//userRouter.post('/admin/createUser',authorizeUser([roles.admin]),userController.createUser)
+//userRouter.delete('/admin/user/:id', authorizeUser([roles.admin]), userController.deleteUser);
+//userRouter.put('/admin/user/:id/password', authorizeUser([roles.admin]),userController.updateUserPassword);
+userRouter.get('/admin/user/:id',authorizeUser([roles.admin]),userController.getUserById);
+//userRouter.put('admin/updateUser/:userId',authorizeUser([roles.admin]),userController.adminUpdateUser)
+userRouter.get('/admin/users/search/name/:username',authorizeUser([roles.admin]),userController.searchUserByName)
+userRouter.get('/admin/users/search/email/:email',authorizeUser([roles.admin]),userController.searchUserByEmail)
+
 
 
 export default userRouter; 
