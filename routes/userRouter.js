@@ -14,7 +14,7 @@ userRouter.post('/admin/createUser',authorizeUser([roles.admin]),userController.
 userRouter.delete('/admin/user/:userId', authorizeUser([roles.admin]), userController.deleteUserById);
 userRouter.put('/admin/user/password/:userId', authorizeUser([roles.admin]),userController.updateUserPassword);
 userRouter.get('/admin/user/:userId',authorizeUser([roles.admin]),userController.getUserById);
-userRouter.put('admin/updateUser/:userId',authorizeUser([roles.admin]),userController.updateUserByAdmin)
+userRouter.put('/admin/updateUser/:userId',authorizeUser([roles.admin]),userController.updateUserByAdmin)
 userRouter.get('/admin/users/search/name/:username',authorizeUser([roles.admin]),userController.searchUserByName)
 userRouter.get('/admin/users/search/email/:email',authorizeUser([roles.admin]),userController.searchUserByEmail)
 userRouter.post('/signOut',authorizeUser([roles.admin,roles.user]),userController.signOut)
