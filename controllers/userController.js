@@ -1,5 +1,7 @@
 import userModel from '../db/schemas/userSchema.js'; 
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import SendEmail from '../services/email.js';
 
 export const getProfile = async (req, res) => {
     try {
@@ -185,6 +187,7 @@ export const signOut = async (req, res) => {
       return res.status(500).json({ message: 'Server error' });
     }
   };
+
   
   export const deleteUserById = async (req, res) => {
     try {
@@ -200,7 +203,6 @@ export const signOut = async (req, res) => {
       return res.status(500).json({ message: 'Server error', error: error.message });
     }
   };
-  
   export const updateUserByAdmin = async (req, res) => {
     try {
       const { userId } = req.params;
