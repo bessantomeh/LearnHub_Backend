@@ -176,5 +176,47 @@ export const getAllCourses = async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: 'Error fetching new courses.', error });
     }};
+
+
+    export const searchCourseByInstructor = async (req, res) => {
+      const { instructor } = req.params;
+    
+      try {
+        const decodedInstructor = decodeURIComponent(instructor);
+        const escapedInstructor = decodedInstructor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const courses = await Course.find({ instructors: { $regex: new RegExp(escapedInstructor, 'i') } });
+    
+        if (courses.length === 0) {
+          return res.status(404).json({ message: 'No courses found for the given instructor.' });
+        }
+    
+        res.status(200).json(courses);
+      } catch (error) {
+        res.status(500).json({ message: 'Error searching courses by instructor.', error });
+      }
+    };
+
+    export const searchCourseByStartDate = async (req, res) => {
+      const { startdate } = req.params;
+    
+      try {
+        // make sure the startDate is in a valid format (YYYY-MM-DD)
+        const parsedDate = new Date(startdate);
+        if (isNaN(parsedDate.getTime())) {
+          return res.status(400).json({ message: 'Invalid start date format.' });
+        }
+        const courses = await Course.find({ startdate: { $gte: parsedDate } });
+    
+        if (courses.length === 0) {
+          return res.status(404).json({ message: 'No courses found starting on or after the given date.' });
+        }
+    
+        res.status(200).json(courses);
+      } catch (error) {
+        res.status(500).json({ message: 'Error searching courses by start date.', error });
+      }
+    };
+    
+    
   
   
