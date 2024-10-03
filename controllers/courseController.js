@@ -197,15 +197,15 @@ export const getAllCourses = async (req, res) => {
     };
 
     export const searchCourseByStartDate = async (req, res) => {
-      const { startdate } = req.params;
+      const { startDate } = req.params;
     
       try {
         // make sure the startDate is in a valid format (YYYY-MM-DD)
-        const parsedDate = new Date(startdate);
+        const parsedDate = new Date(startDate);
         if (isNaN(parsedDate.getTime())) {
           return res.status(400).json({ message: 'Invalid start date format.' });
         }
-        const courses = await Course.find({ startdate: { $gte: parsedDate } });
+        const courses = await Course.find({ startDate: { $gte: parsedDate } });
     
         if (courses.length === 0) {
           return res.status(404).json({ message: 'No courses found starting on or after the given date.' });

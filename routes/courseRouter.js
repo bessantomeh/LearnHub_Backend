@@ -13,6 +13,6 @@ courseRouter.get('/Courses', CourseController.getAllCourses);
 courseRouter.get('/search/subject/:subject',CourseController.searchCourseBySubject);
 courseRouter.get('/search/title/:title',CourseController.searchCourseByTitle);
 courseRouter.get('/search/instructor/:instructor',CourseController.searchCourseByInstructor);
-courseRouter.get('/search/startdate/:startdate',CourseController.searchCourseByStartDate);
+courseRouter.get('/search/startDate/:startDate',CourseController.searchCourseByStartDate);
 courseRouter.get('/NewCourses', CourseController.getNewCourses);
 export default courseRouter; 
