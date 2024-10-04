@@ -227,7 +227,7 @@ export const signOut = async (req, res) => {
       }
       const existingUser = await userModel.findOne({ email });
       if (existingUser) {
-        return next(Object.assign(new Error('Email already exists'), { cause: 409 }));
+        return res.status(409).json({ message: 'Email already exists' });
       }
       const saltRounds = parseInt(process.env.SALTROUNT);
       const hashedPassword = await bcrypt.hash(password, saltRounds);
