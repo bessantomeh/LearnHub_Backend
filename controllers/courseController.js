@@ -120,11 +120,14 @@ export const getAllCourses = async (req, res) => {
 
 
   export const searchCourseByTitle = async (req, res) => {
-    const { title } = req.params;  
+    const { title } = req.params;
     
     try {
-      const courses = await Course.find({ title: { $regex: new RegExp(title, 'i') } });
-      
+      const decodedTitle = decodeURIComponent(title);
+      const escapedTitle = decodedTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  
+      const courses = await Course.find({ title: { $regex: new RegExp(escapedTitle, 'i') } });
+  
       if (courses.length === 0) {
         return res.status(404).json({ message: 'No courses found with the given title.' });
       }
@@ -134,13 +137,15 @@ export const getAllCourses = async (req, res) => {
       res.status(500).json({ message: 'Error searching courses by title.', error });
     }
   };
-
-
+  
   export const searchCourseBySubject = async (req, res) => {
     const { subject } = req.params;
-  
+    
     try {
-      const courses = await Course.find({ subject: { $regex: new RegExp(subject, 'i') } });
+      const decodedSubject = decodeURIComponent(subject);  
+      const escapedSubject = decodedSubject.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  
+      const courses = await Course.find({ subject: { $regex: new RegExp(escapedSubject, 'i') } });
   
       if (courses.length === 0) {
         return res.status(404).json({ message: 'No courses found with the given subject.' });
@@ -151,6 +156,7 @@ export const getAllCourses = async (req, res) => {
       res.status(500).json({ message: 'Error searching courses by subject.', error });
     }
   };
+  
   
   export const getNewCourses = async (req,res) => {
 
@@ -170,5 +176,47 @@ export const getAllCourses = async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: 'Error fetching new courses.', error });
     }};
+
+
+    export const searchCourseByInstructor = async (req, res) => {
+      const { instructor } = req.params;
+    
+      try {
+        const decodedInstructor = decodeURIComponent(instructor);
+        const escapedInstructor = decodedInstructor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const courses = await Course.find({ instructors: { $regex: new RegExp(escapedInstructor, 'i') } });
+    
+        if (courses.length === 0) {
+          return res.status(404).json({ message: 'No courses found for the given instructor.' });
+        }
+    
+        res.status(200).json(courses);
+      } catch (error) {
+        res.status(500).json({ message: 'Error searching courses by instructor.', error });
+      }
+    };
+
+    export const searchCourseByStartDate = async (req, res) => {
+      const { startDate } = req.params;
+    
+      try {
+        // make sure the startDate is in a valid format (YYYY-MM-DD)
+        const parsedDate = new Date(startDate);
+        if (isNaN(parsedDate.getTime())) {
+          return res.status(400).json({ message: 'Invalid start date format.' });
+        }
+        const courses = await Course.find({ startDate: { $eq: parsedDate } });
+    
+        if (courses.length === 0) {
+          return res.status(404).json({ message: 'No courses found starting on the given date.' });
+        }
+    
+        res.status(200).json(courses);
+      } catch (error) {
+        res.status(500).json({ message: 'Error searching courses by start date.', error });
+      }
+    };
+    
+    
   
   
