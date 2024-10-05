@@ -5,7 +5,14 @@ import SendEmail from '../services/email.js';
 import { URL } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
+/*
+  Controller for handling user authentication-related operations,
+  including sign-up, email confirmation, sign-in, password recovery, 
+  and verification of recovery codes.
+ */
 
+
+// Function to handle user sign-up
 export const signUp = async (req, res, next) => {
     try {
       const { username, email, password } = req.body;
@@ -47,6 +54,7 @@ export const signUp = async (req, res, next) => {
     }
   };
 
+// Function to confirm a user's email address
 export const confirmEmail = async (req, res, next) => {
     try {
       if (!process.env.AUTHTOKEN) {
@@ -87,6 +95,8 @@ export const confirmEmail = async (req, res, next) => {
     }
   };
 
+
+// Function to handle user sign-in
 export const signIn = async (req, res, next) => {
     try {
       if (!process.env.AUTHTOKEN) {
@@ -117,7 +127,8 @@ export const signIn = async (req, res, next) => {
       res.status(500).json({ message: "Server error." });
     }
   };
-  
+
+// Function to send a verification code for when password is forgotten
 export const sendCode = async (req, res, next) => {
     const { email } = req.body;
     const user = await userModel.findOne({ email }).select('email');
@@ -134,7 +145,8 @@ export const sendCode = async (req, res, next) => {
       }
     }
   };
-  
+
+// Function to handle password recovery
 export const forgetPassword = async (req, res, next) => {
     const { code, email, newPassword } = req.body;
     if (!process.env.SALTROUNT) {
@@ -153,6 +165,7 @@ export const forgetPassword = async (req, res, next) => {
     }
   };
 
+// Function to verify the recovery code
 export const verifyCode = async (req, res, next) => {
     try {
         const { email, code } = req.body;

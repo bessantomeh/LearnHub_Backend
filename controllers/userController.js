@@ -3,6 +3,13 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import SendEmail from '../services/email.js';
 
+/*
+  Controller for managing user-related operations including 
+  profile retrieval, password updates, user management, and more.
+ */
+
+
+// Function to help the user get their profile
 export const getProfile = async (req, res) => {
     try {
       if (!req.user) {
@@ -21,6 +28,7 @@ export const getProfile = async (req, res) => {
     }
   };
 
+// Function for the user to update their password
 export const updatePassword = async (req, res) => {
     try {
       if (!process.env.SALTROUNT) {
@@ -59,6 +67,7 @@ export const updatePassword = async (req, res) => {
     }
   };
 
+// Function for the user to update their details
 export const updateUser = async (req, res) => {
     try {
       const id = req.user?._id; 
@@ -76,6 +85,7 @@ export const updateUser = async (req, res) => {
     }
   };
 
+// Function to retrieve all users with the role 'user'
 export const getAllUsers = async (req, res, next) => {
     try {
       const users = await userModel.find({ role: 'user' });
@@ -85,6 +95,7 @@ export const getAllUsers = async (req, res, next) => {
     }
   };
 
+// Function for the user to delete their account
 export const deleteUser = async (req, res) => {
     try {
       const userId = req.user._id; 
@@ -101,7 +112,7 @@ export const deleteUser = async (req, res) => {
     }
   };
 
-
+// Function to retrieve a user by their ID
 export const getUserById = async (req, res) => {
     try {
       const { userId } = req.params;
@@ -117,6 +128,7 @@ export const getUserById = async (req, res) => {
     }
   };
 
+  // Function to search users by their username
   export const searchUserByName = async (req, res) => {
     const { username } = req.params;  
     
@@ -133,7 +145,7 @@ export const getUserById = async (req, res) => {
     }
   };
 
-
+  // Function to search users by their email
   export const searchUserByEmail = async (req, res) => {
     const { email } = req.params;
   
@@ -149,7 +161,8 @@ export const getUserById = async (req, res) => {
       res.status(500).json({ message: 'Error searching users by email.', error });
     }
   };
-  
+
+// Function to sign out the user
 export const signOut = async (req, res) => {
     try {
         
@@ -160,6 +173,8 @@ export const signOut = async (req, res) => {
     }
   };
 
+
+  // Function to update the password of a user by admin
   export const updateUserPassword = async (req, res) => {
     try {
       const { userId } = req.params;
@@ -188,7 +203,7 @@ export const signOut = async (req, res) => {
     }
   };
 
-  
+  // Function to delete a user by their ID (admin functionality)
   export const deleteUserById = async (req, res) => {
     try {
       const { userId } = req.params;
@@ -203,6 +218,9 @@ export const signOut = async (req, res) => {
       return res.status(500).json({ message: 'Server error', error: error.message });
     }
   };
+
+
+  // Function to update user details by admin
   export const updateUserByAdmin = async (req, res) => {
     try {
       const { userId } = req.params;
@@ -219,6 +237,8 @@ export const signOut = async (req, res) => {
     }
   };
   
+
+  // Function to create a new user
   export const createUser = async (req, res, next) => {
     try {
       const { username, email, password } = req.body;

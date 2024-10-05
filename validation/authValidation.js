@@ -1,5 +1,9 @@
 import Joi from 'joi';
 
+/*
+  Validation for user authentication and password reset.
+ */
+
 export const signup = {
   body: Joi.object().required().keys({
     username: Joi.string().min(3).max(15).required().messages({

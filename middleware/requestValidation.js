@@ -1,3 +1,7 @@
+/**
+ * Middleware to validate request data against a schema.
+ * Responds with 400 if validation fails, or 500 for unexpected errors.
+ */
 export const validation = (schema) => {
     return (req, res, next) => {
       try {

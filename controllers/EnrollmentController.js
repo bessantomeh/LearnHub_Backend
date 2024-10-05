@@ -2,6 +2,14 @@ import Course from '../db/schemas/courseSchema.js';
 import Enrollment from '../db/schemas/EnrollmentSchema.js';
 import userModel from '../db/schemas/userSchema.js';
 
+/*
+  Controller for managing course enrollments, including enrolling, 
+  listing courses for a user, and unenrolling from courses.
+ */
+
+
+
+// Function to enroll a user in a course
 export const enrollInCourse = async (req, res) => {
     const {courseId} = req.body; 
     const userId = req.user?._id;
@@ -48,6 +56,7 @@ export const enrollInCourse = async (req, res) => {
     }
   };
 
+// Function to list all courses a user is enrolled in
 export const listUserCourses = async (req, res) => {
   const userId = req.user?._id;  
     try {
@@ -63,6 +72,8 @@ export const listUserCourses = async (req, res) => {
     }
   };
 
+
+// Function to unenroll a user from a course
 export const unenrollFromCourse = async (req, res) => {
     const { courseId } = req.body;
     const userId = req.user?._id;

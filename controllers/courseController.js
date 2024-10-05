@@ -1,8 +1,13 @@
 import Course from '../db/schemas/courseSchema.js';
 import Enrollment from '../db/schemas/EnrollmentSchema.js';
 
+/*
+  Controller for handling course-related operations, including CRUD operations,
+  as well as searching courses based on various criteria.
+ */
 
 
+// Function to create a new course
 export const createCourse = async (req, res) => {
   try {
     const { title, description, instructors, startDate, endDate, capacity, subject } = req.body;
@@ -42,6 +47,8 @@ export const createCourse = async (req, res) => {
   }
 };
 
+
+// Function to update an existing course
 export const updateCourse = async (req, res) => {
     try {
       const courseId = req.params.courseId; 
@@ -73,6 +80,7 @@ export const updateCourse = async (req, res) => {
     }
   };
 
+// Function to delete a course
 export const deleteCourse = async (req, res) => {
     try {
       const { courseId } = req.params;
@@ -90,6 +98,7 @@ export const deleteCourse = async (req, res) => {
     }
   };
 
+// Function to retrieve course details by course ID
 export const getCourseDetails = async (req, res) => {
     try {
       const { courseId } = req.params;
@@ -105,6 +114,7 @@ export const getCourseDetails = async (req, res) => {
     }
   };
 
+// Function to retrieve all courses
 export const getAllCourses = async (req, res) => {
     try {
       const courses = await Course.find();
@@ -118,8 +128,8 @@ export const getAllCourses = async (req, res) => {
     }
   };
 
-
-  export const searchCourseByTitle = async (req, res) => {
+// Function to search for courses by title
+export const searchCourseByTitle = async (req, res) => {
     const { title } = req.params;
     
     try {
@@ -137,8 +147,9 @@ export const getAllCourses = async (req, res) => {
       res.status(500).json({ message: 'Error searching courses by title.', error });
     }
   };
-  
-  export const searchCourseBySubject = async (req, res) => {
+
+// Function to search for courses by subject
+export const searchCourseBySubject = async (req, res) => {
     const { subject } = req.params;
     
     try {
@@ -157,8 +168,8 @@ export const getAllCourses = async (req, res) => {
     }
   };
   
-  
-  export const getNewCourses = async (req,res) => {
+// Function to retrieve newly added courses within the last 30 days
+export const getNewCourses = async (req,res) => {
 
     try {
       const thirtyDaysAgo = new Date();
@@ -177,8 +188,8 @@ export const getAllCourses = async (req, res) => {
       res.status(500).json({ message: 'Error fetching new courses.', error });
     }};
 
-
-    export const searchCourseByInstructor = async (req, res) => {
+// Function to search for courses by instructor
+export const searchCourseByInstructor = async (req, res) => {
       const { instructor } = req.params;
     
       try {
@@ -196,7 +207,9 @@ export const getAllCourses = async (req, res) => {
       }
     };
 
-    export const searchCourseByStartDate = async (req, res) => {
+
+// Function to search for courses by start date
+export const searchCourseByStartDate = async (req, res) => {
       const { startDate } = req.params;
     
       try {

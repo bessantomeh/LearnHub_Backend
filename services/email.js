@@ -1,5 +1,10 @@
 import nodemailer from "nodemailer";
 
+/*
+  Sends an email using nodemailer, Resolves with the info
+  of the sent email or throws an error if sending fails.
+ */
+
 async function sendEmail(dest, subject, message) {
   try {
     let transporter = nodemailer.createTransport({
