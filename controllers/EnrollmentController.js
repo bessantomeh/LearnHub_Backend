@@ -11,8 +11,8 @@ import userModel from '../db/schemas/userSchema.js';
 
 // Function to enroll a user in a course
 export const enrollInCourse = async (req, res) => {
-    const {courseId} = req.body; 
-    const userId = req.user?._id;
+  const userId = req.user?._id.toString(); 
+  const courseId = req.body.courseId.toString()
     try {
       if (!userId || !courseId) {
         return res.status(400).json({ message: 'User ID and Course ID are required.' });
@@ -75,8 +75,8 @@ export const listUserCourses = async (req, res) => {
 
 // Function to unenroll a user from a course
 export const unenrollFromCourse = async (req, res) => {
-    const { courseId } = req.body;
-    const userId = req.user?._id;
+    const userId = req.user?._id.toString(); 
+  const courseId = req.body.courseId.toString()
   
     try {
       if (!userId || !courseId) {
