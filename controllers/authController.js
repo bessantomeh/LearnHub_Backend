@@ -16,8 +16,10 @@ import { v4 as uuidv4 } from 'uuid';
 export const signUp = async (req, res, next) => {
     try {
       const { username, email, password } = req.body;
-      const userInputEmail = email.trim().toLowerCase();
-      const user = await userModel.findOne({ email: userInputEmail }).select("email");
+      const user = await userModel.findOne({ email }).select("email");
+      if (user) {
+        return res.status(409).json({ message: 'Email already exists' });
+      }
       if (user) {
         return res.status(409).json({ message: 'Email already exists' });
       }
