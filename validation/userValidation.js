@@ -20,6 +20,6 @@ export const updatePassword={
 export const getUserById={
    
     params:Joi.object().required().keys({
-        id:Joi.string().required()
+        userId:Joi.string().required()
     })
 }
