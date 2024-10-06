@@ -2,8 +2,8 @@ import { Router } from "express";
 import { roles } from '../services/role.js';
 import * as userController from '../controllers/userController.js'; 
 import {authorizeUser} from "../middleware/authentication.js";
-import { validation } from './../middleware/requestValidation';
-import * as validators from './../validation/userValidation'
+import { validation } from './../middleware/requestValidation.js';
+import * as validators from './../validation/userValidation.js';
 
 const userRouter = Router();
 
