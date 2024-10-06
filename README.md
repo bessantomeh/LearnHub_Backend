@@ -62,6 +62,8 @@ Run in production mode:npm start
 ## Testing
 You can run tests using Jest:npm test
 
+### Deployment
+The backend system is deployed on **Render**, a cloud platform used for hosting and scaling web applications.
 
 License
 This project is licensed under the MIT License - see the LICENSE file for details.
