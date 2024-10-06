@@ -172,8 +172,7 @@ export const verifyCode = async (req, res, next) => {
     try {
         const { email, code } = req.body;
 
-      const userInputEmail = email.trim().toLowerCase();
-      const user = await userModel.findOne({ email: userInputEmail }).select("sendCode");
+      const user = await userModel.findOne(email).select("sendCode");
        
 
 
