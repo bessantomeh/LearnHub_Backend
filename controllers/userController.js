@@ -256,7 +256,7 @@ export const signOut = async (req, res) => {
   
       const token = jwt.sign({ id: newUser._id }, process.env.EMAILTOKEN, { expiresIn: '1h' });
   
-      const savedUser = await newUser.save();
+      await newUser.save();
   
       res.status(201).json({ message: 'User created successfully', token });
     } catch (error) {
