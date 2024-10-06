@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
  */
 
 
-// Function to handle user sign-up
+// Function to handle user sign-up 
 export const signUp = async (req, res, next) => {
     try {
       const { username, email, password } = req.body;
