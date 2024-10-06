@@ -174,9 +174,10 @@ export const verifyCode = async (req, res, next) => {
         const user = await userModel.findOne({ email }).select('sendCode');
 
 
-        if (!user || !user.sendCode) {
-            return res.status(404).json({ message: "Invalid email or no code sent" });
-        }
+       if (!user?.sendCode) {
+    return res.status(404).json({ message: "Invalid email or no code sent" });
+}
+
 
 
         if (user.sendCode !== code) {
