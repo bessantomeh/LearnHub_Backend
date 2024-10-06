@@ -13,46 +13,55 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 // Function to handle user sign-up
+const userCache = new Map();  
+const usedTokens = new Set();  
+
 export const signUp = async (req, res, next) => {
-    try {
-      const { username, email, password } = req.body;
-      const userInputEmail = email.trim().toLowerCase();
-      const user = await userModel.findOne({ email: userInputEmail }).select("email");
-      if (user) {
-        return res.status(409).json({ message: 'Email already exists' });
-      }
-  
-      if (!process.env.SALTROUNT || !process.env.EMAILTOKEN) {
-        throw new Error('SALTROUNT | EMAILTOKEN environment variable is not defined.');
-      }
-      if (!process.env.AUTHTOKEN) {
-        throw new Error('AUTHTOKEN environment variable is not defined.');
-      }
-  
-      const SALTROUNT = parseInt(process.env.SALTROUNT);
-      
-      const hash = bcrypt.hashSync(password, SALTROUNT);
-      
-      const newUser = new userModel({ username, email, password: hash });
-      
-      const token = jwt.sign({ id: newUser._id }, process.env.AUTHTOKEN, { expiresIn: "1d" });
-      
-      const link = `${req.protocol}://${req.headers.host}${process.env.BASEURL}auth/confirmEmail/${token}`;
-      const message = `<a href="${link}">Confirm Email</a>`;
-      
-      const info = await SendEmail(email, 'Verify email', message);
-      if (info.accepted.length) {
-        const savedUser = await newUser.save();
-        console.log("User saved successfully:", savedUser);
-        return res.status(201).json({ message: 'Success', token });
-      } else {
-        return next(Object.assign(new Error("Email rejected"), { cause: 404 }));
-      }
-    } catch (err) {
-        console.error("Error saving user:", err); 
-      return res.status(500).json({ message: 'Server error' });
+  try {
+    const { username, email, password } = req.body;
+    const userInputEmail = email.trim().toLowerCase();
+
+    if (userCache.has(userInputEmail)) {
+      return res.status(409).json({ message: 'Email already exists (cached)' });
     }
-  };
+
+    const user = await userModel.findOne({ email: userInputEmail }).select("email");
+    if (user) {
+      userCache.set(userInputEmail, user);
+      return res.status(409).json({ message: 'Email already exists' });
+    }
+
+    if (!process.env.SALTROUNT || !process.env.AUTHTOKEN) {
+      throw new Error('SALTROUNT or AUTHTOKEN environment variable is not defined.');
+    }
+
+    const SALTROUNT = parseInt(process.env.SALTROUNT);
+    const hash = bcrypt.hashSync(password, SALTROUNT);  
+
+    const newUser = new userModel({ username, email: userInputEmail, password: hash });
+
+    let token = jwt.sign({ id: newUser._id }, process.env.AUTHTOKEN, { expiresIn: "1d" });
+    while (usedTokens.has(token)) {
+      token = jwt.sign({ id: newUser._id }, process.env.AUTHTOKEN, { expiresIn: "1d" });
+    }
+    usedTokens.add(token);  
+
+    const link = `${req.protocol}://${req.headers.host}${process.env.BASEURL}auth/confirmEmail/${token}`;
+    const message = `<a href="${link}">Confirm Email</a>`;
+
+    const info = await SendEmail(userInputEmail, 'Verify email', message);
+    if (info.accepted.length) {
+      const savedUser = await newUser.save();
+      userCache.set(userInputEmail, savedUser);
+      return res.status(201).json({ message: 'Success', token });
+    } else {
+      return next(Object.assign(new Error("Email rejected"), { cause: 404 }));
+    }
+  } catch (err) {
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 // Function to confirm a user's email address
 export const confirmEmail = async (req, res, next) => {
