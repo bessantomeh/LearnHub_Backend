@@ -23,8 +23,7 @@ export const createCourse = async (req, res) => {
     if (capacity <= 0) {
       return res.status(400).json({ error: 'Capacity must be a positive number' });
     }
-    const sanitizedTitle = title.trim();
-    const existingCourse = await Course.findOne({ title: sanitizedTitle });
+     const existingCourse = await Course.findOne({ title });
     if (existingCourse) {
       return res.status(400).json({ error: 'Course with this title already exists' });
     }
