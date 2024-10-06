@@ -42,7 +42,6 @@ export const createCourse = async (req, res) => {
     const savedCourse = await newCourse.save();
     res.status(201).json({ message: 'Course created successfully', course: savedCourse });
   } catch (error) {
-    console.error('Error creating course:', error);
     res.status(500).json({ error: 'Failed to create the course' });
   }
 };
