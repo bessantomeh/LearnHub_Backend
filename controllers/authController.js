@@ -16,8 +16,10 @@ import { v4 as uuidv4 } from 'uuid';
 export const signUp = async (req, res, next) => {
     try {
       const { username, email, password } = req.body;
-      
       const user = await userModel.findOne({ email }).select("email");
+      if (user) {
+        return res.status(409).json({ message: 'Email already exists' });
+      }
       if (user) {
         return res.status(409).json({ message: 'Email already exists' });
       }
@@ -170,13 +172,15 @@ export const verifyCode = async (req, res, next) => {
     try {
         const { email, code } = req.body;
 
+      const userInputEmail = email.trim().toLowerCase();
+      const user = await userModel.findOne({ email: userInputEmail }).select("sendCode");
+       
 
-        const user = await userModel.findOne({ email }).select('sendCode');
 
+       if (!user?.sendCode) {
+    return res.status(404).json({ message: "Invalid email or no code sent" });
+}
 
-        if (!user || !user.sendCode) {
-            return res.status(404).json({ message: "Invalid email or no code sent" });
-        }
 
 
         if (user.sendCode !== code) {

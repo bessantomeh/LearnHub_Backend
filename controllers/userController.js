@@ -245,7 +245,7 @@ export const signOut = async (req, res) => {
       if (!process.env.SALTROUNT || !process.env.EMAILTOKEN) {
         throw new Error('SALTROUNDS or EMAILTOKEN environment variable is not defined.');
       }
-      const existingUser = await userModel.findOne({ email });
+       const existingUser = await userModel.findOne({ email }).select("email");
       if (existingUser) {
         return res.status(409).json({ message: 'Email already exists' });
       }
@@ -256,7 +256,7 @@ export const signOut = async (req, res) => {
   
       const token = jwt.sign({ id: newUser._id }, process.env.EMAILTOKEN, { expiresIn: '1h' });
   
-      const savedUser = await newUser.save();
+      await newUser.save();
   
       res.status(201).json({ message: 'User created successfully', token });
     } catch (error) {
