@@ -104,7 +104,8 @@ export const signIn = async (req, res, next) => {
       }
   
       const { email, password } = req.body;
-      const user = await userModel.findOne({ email });
+      const sanitizedEmail = email.toString();
+      const user = await userModel.findOne({ email:sanitizedEmail });
   
       if (!user) {
         return res.status(404).json({ message: "User is not registered." });
@@ -131,7 +132,8 @@ export const signIn = async (req, res, next) => {
 // Function to send a verification code for when password is forgotten
 export const sendCode = async (req, res, next) => {
     const { email } = req.body;
-    const user = await userModel.findOne({ email }).select('email');
+  const sanitizedEmail = email.toString();
+    const user = await userModel.findOne({ email:sanitizedEmail}).select('email');
     if (!user) {
       res.json({ message: "invalid account" });
     } else {
@@ -156,7 +158,8 @@ export const forgetPassword = async (req, res, next) => {
       res.json({ message: "fail" });
     } else {
       const hash = await bcrypt.hash(newPassword, parseInt(process.env.SALTROUNT));
-      const user = await userModel.findOneAndUpdate({ email, sendCode: code }, { password: hash, sendCode: null });
+      const sanitizedEmail = email.toString();
+      const user = await userModel.findOneAndUpdate({ email:sanitizedEmail, sendCode: code }, { password: hash, sendCode: null });
       if (!user) {
         res.json({ message: "fail" });
       } else {
