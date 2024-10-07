@@ -158,8 +158,7 @@ export const forgetPassword = async (req, res, next) => {
       res.json({ message: "fail" });
     } else {
       const hash = await bcrypt.hash(newPassword, parseInt(process.env.SALTROUNT));
-      const sanitizedEmail = email.toString();
-      const user = await userModel.findOneAndUpdate({ email:sanitizedEmail, sendCode: code }, { password: hash, sendCode: null });
+      const user = await userModel.findOneAndUpdate({ email, sendCode: code }, { password: hash, sendCode: null });
       if (!user) {
         res.json({ message: "fail" });
       } else {
